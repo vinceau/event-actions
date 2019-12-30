@@ -8,7 +8,8 @@ describe("action events", () => {
     mgr.registerAction("add-one", AddOne);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
-      name: "add-one"
+      name: "add-one",
+      transform: true,
     });
     let res: number;
     res = await mgr.emitEvent(eventName, 1);
@@ -28,16 +29,20 @@ describe("action events", () => {
     mgr.registerAction("sub-one", SubOne);
 
     mgr.registerEvent(eventName, {
-      name: "add-one"
+      name: "add-one",
+      transform: true,
     });
     mgr.registerEvent(eventName, {
-      name: "add-two"
+      name: "add-two",
+      transform: true,
     });
     mgr.registerEvent(eventName, {
-      name: "add-five"
+      name: "add-five",
+      transform: true,
     });
     mgr.registerEvent(eventName, {
       name: "sub-one",
+      transform: true,
     });
     let res;
     res = await mgr.emitEvent(eventName, 2);
@@ -53,8 +58,14 @@ describe("action events", () => {
     const eventName = "testEvent";
     mgr.registerAction("add-together", AddTogether);
     mgr.registerAction("div-by-two", DivByTwo);
-    mgr.registerEvent(eventName, { name: "add-together" });
-    mgr.registerEvent(eventName, { name: "div-by-two" });
+    mgr.registerEvent(eventName, {
+      name: "add-together",
+      transform: true,
+    });
+    mgr.registerEvent(eventName, {
+      name: "div-by-two",
+      transform: true,
+    });
     let res;
     res = await mgr.emitEvent(eventName, 2, 2);
     expect(res).toBe(2);
@@ -68,14 +79,17 @@ describe("action events", () => {
     mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
-      name: "add-together"
+      name: "add-together",
+      transform: true,
     });
     mgr.registerEvent(eventName, {
       name: "add-custom",
+      transform: true,
       args: 5,
     });
     mgr.registerEvent(eventName, {
       name: "add-custom",
+      transform: true,
       args: 10,
     });
     let res: number;
