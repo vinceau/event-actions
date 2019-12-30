@@ -73,6 +73,39 @@ describe("action events", () => {
     expect(res).toBe(4);
   });
 
+  it("does not change output when actions are non-transforming", async () => {
+    const mgr = new EventManager();
+    const eventName = "testEvent";
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-one", AddOne);
+    mgr.registerAction("div-by-two", DivByTwo);
+    mgr.registerEvent(eventName, {
+      name: "add-together",
+      transform: true,
+    });
+    // This event should not change the output
+    mgr.registerEvent(eventName, {
+      name: "add-one",
+    });
+    // This event should not change the output
+    mgr.registerEvent(eventName, {
+      name: "add-one",
+    });
+    // This event should not change the output
+    mgr.registerEvent(eventName, {
+      name: "add-one",
+    });
+    mgr.registerEvent(eventName, {
+      name: "div-by-two",
+      transform: true,
+    });
+    let res;
+    res = await mgr.emitEvent(eventName, 2, 2);
+    expect(res).toBe(2);
+    res = await mgr.emitEvent(eventName, 2, 6);
+    expect(res).toBe(4);
+  });
+
   it("can add custom", async () => {
     const mgr = new EventManager();
     mgr.registerAction("add-together", AddTogether);
