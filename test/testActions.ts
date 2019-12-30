@@ -10,6 +10,20 @@ export class AddOne implements Action {
   }
 }
 
+export class AddTogether implements Action {
+  public async run(...args: any[]): Promise<any> {
+    await delay(500);
+    return args[0] + args[1];
+  }
+}
+
+export class DivByTwo implements Action {
+  public async run(...args: any[]): Promise<any> {
+    await delay(200);
+    return args[0] / 2;
+  }
+}
+
 export class SubOne implements Action {
   public async run(...args: any[]): Promise<any> {
     await delay(300);

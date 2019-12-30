@@ -1,5 +1,5 @@
 import { EventManager }  from "../src/action";
-import { AddOne, AddTwo, AddFive, SubOne }  from "./testActions";
+import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo }  from "./testActions";
 
 describe("action events", () => {
 
@@ -31,5 +31,18 @@ describe("action events", () => {
     res = await mgr.emitEvent(eventName, 4);
     expect(res).toBe(11);
   });
+
+  it("can take more than one argument", async () => {
+    const mgr = new EventManager();
+    const eventName = "testEvent";
+    mgr.registerEvent(eventName, new AddTogether());
+    mgr.registerEvent(eventName, new DivByTwo());
+    let res;
+    res = await mgr.emitEvent(eventName, 2, 2);
+    expect(res).toBe(2);
+    res = await mgr.emitEvent(eventName, 2, 6);
+    expect(res).toBe(4);
+  });
+
 
 });
