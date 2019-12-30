@@ -44,3 +44,16 @@ export class AddFive implements Action {
     return args[0] + 5;
   }
 }
+
+export class AddCustom implements Action {
+  private amount: number;
+
+  public constructor(amount: number) {
+    this.amount = amount;
+  }
+
+  public async run(...args: any[]): Promise<any> {
+    await delay(100);
+    return args[0] + this.amount;
+  }
+}

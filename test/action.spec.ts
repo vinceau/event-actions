@@ -1,5 +1,5 @@
 import { EventManager }  from "../src/action";
-import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo }  from "./testActions";
+import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo, AddCustom }  from "./testActions";
 
 describe("action events", () => {
 
@@ -42,6 +42,18 @@ describe("action events", () => {
     expect(res).toBe(2);
     res = await mgr.emitEvent(eventName, 2, 6);
     expect(res).toBe(4);
+  });
+
+  it("can add custom", async () => {
+    const mgr = new EventManager();
+    const eventName = "testEvent";
+    mgr.registerEvent(eventName, new AddTogether());
+    mgr.registerEvent(eventName, new AddCustom(5));
+    let res;
+    res = await mgr.emitEvent(eventName, 2, 2);
+    expect(res).toBe(9);
+    res = await mgr.emitEvent(eventName, 1, 4);
+    expect(res).toBe(10);
   });
 
 
