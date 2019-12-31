@@ -7,7 +7,7 @@ export interface Action {
 export type ActionType = (args?: any) => Promise<any>;
 export type ActionTypeGenerator = (args?: any) => ActionType;
 
-type EventActions = { [event: string]: Action[] }
+export type EventActions = { [event: string]: Action[] }
 
 export class EventManager {
   private eventActions: EventActions = {};
@@ -47,6 +47,11 @@ export class EventManager {
     const actions = this.eventActions[event] || [];
     // Return a copy
     return Array.from(actions);
+  }
+
+  public getAllEventActions(): EventActions {
+    // Return a copy
+    return Object.assign({}, this.eventActions);
   }
 
   /**
