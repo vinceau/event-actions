@@ -17,6 +17,10 @@ export class EventManager {
     this.allActions.set(actionName, action);
   }
 
+  public listRegisteredActions(): string[] {
+    return Array.from(this.allActions.keys());
+  }
+
   public async emitEvent(eventName: string, ...args: any[]): Promise<any> {
     const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
