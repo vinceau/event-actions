@@ -25,6 +25,7 @@ export class EventManager {
     let prevReturn = args;
     for (const a of eventActions) {
       const action = this.allActions.get(a.name);
+      // Skip if it doesn't exist
       if (!action) {
         continue;
       }
