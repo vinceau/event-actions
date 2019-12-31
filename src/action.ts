@@ -42,6 +42,12 @@ export class EventManager {
     return prevReturn;
   }
 
+  public getActions(event: string): Action[] {
+    const actions = this.eventActions[event] || [];
+    // Return a copy
+    return Array.from(actions);
+  }
+
   public registerEvent(eventName: string, action: Action): void {
     let existingEvents = this.eventActions[eventName];
     if (!existingEvents) {
