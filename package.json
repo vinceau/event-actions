@@ -3,7 +3,7 @@
   "description": "Event and action automation library",
   "license": "MIT",
   "version": "0.0.1",
-  "repository": "vinceau/action-events",
+  "repository": "vinceau/event-actions",
   "engines": {
     "node": ">=6"
   },
