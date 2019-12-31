@@ -132,6 +132,52 @@ describe("action events", () => {
     expect(res).toBe(20);
   });
 
+  it("cannot remove non-existent actions", async () => {
+    const mgr = new EventManager();
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
+    const eventName = "testEvent";
+    expect(mgr.removeAction(eventName, 1)).toBe(false)
+    mgr.registerEvent(eventName, {
+      name: "add-together",
+      transform: true,
+    });
+    expect(mgr.removeAction(eventName, 1)).toBe(false)
+    mgr.registerEvent(eventName, {
+      name: "add-custom",
+      transform: true,
+      args: 5,
+    });
+    expect(mgr.removeAction(eventName, 1)).toBe(true)
+  });
+
+  it("can remove actions", async () => {
+    const mgr = new EventManager();
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
+    const eventName = "testEvent";
+    mgr.registerEvent(eventName, {
+      name: "add-together",
+      transform: true,
+    });
+    mgr.registerEvent(eventName, {
+      name: "add-custom",
+      transform: true,
+      args: 5,
+    });
+    mgr.registerEvent(eventName, {
+      name: "add-custom",
+      transform: true,
+      args: 10,
+    });
+    expect(mgr.removeAction(eventName, 2)).toBe(true)
+    let res: number;
+    res = await mgr.emitEvent(eventName, 2, 2);
+    expect(res).toBe(9);
+    res = await mgr.emitEvent(eventName, 1, 4);
+    expect(res).toBe(10);
+  });
+
   it("can deserialize event actions", async () => {
     const mgr = new EventManager();
     mgr.registerAction("add-together", AddTogether);

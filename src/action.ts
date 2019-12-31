@@ -49,6 +49,15 @@ export class EventManager {
     return Array.from(actions);
   }
 
+  public removeAction(event: string, index: number): boolean {
+    const list = this.eventActions[event];
+    if (!list) {
+      return false;
+    }
+    const res = list.splice(index, 1)
+    return res.length > 0;
+  }
+
   public registerEvent(eventName: string, action: Action): void {
     let existingEvents = this.eventActions[eventName];
     if (!existingEvents) {
