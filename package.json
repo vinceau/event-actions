@@ -1,5 +1,5 @@
 {
-  "name": "@vinceau/action-events",
+  "name": "@vinceau/event-actions",
   "description": "Event and action automation library",
   "license": "MIT",
   "version": "0.0.1",
@@ -32,10 +32,8 @@
     "testRegex": "/test/.*",
     "testEnvironment": "node"
   },
-  "keywords": [
-  ],
-  "dependencies": {
-  },
+  "keywords": [],
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.3",
