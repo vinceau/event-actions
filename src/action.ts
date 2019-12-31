@@ -6,6 +6,7 @@ export interface Action {
 
 export type ActionType = (args?: any) => Promise<any>;
 export type ActionTypeGenerator = (args?: any) => ActionType;
+
 type EventActions = { [event: string]: Action[] }
 
 export class EventManager {
@@ -54,9 +55,8 @@ export class EventManager {
     return JSON.stringify(this.eventActions);
   }
 
-  public deserialize(jsonStr: string): EventActions {
+  public deserialize(jsonStr: string): void {
     this.eventActions = JSON.parse(jsonStr);
-    return this.eventActions;
   }
 
 }
