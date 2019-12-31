@@ -6,22 +6,18 @@ export interface Action {
 
 export type ActionType = (args?: any) => Promise<any>;
 export type ActionTypeGenerator = (args?: any) => ActionType;
+type EventActions = { [event: string]: Action[] }
 
 export class EventManager {
-  private eventActions: Map<string, Action[]>;
-  private allActions: Map<string, ActionTypeGenerator>;
-
-  public constructor() {
-    this.eventActions = new Map<string, Action[]>();
-    this.allActions = new Map<string, ActionTypeGenerator>();
-  }
+  private eventActions: EventActions = {};
+  private allActions = new Map<string, ActionTypeGenerator>();
 
   public registerAction(actionName: string, action: ActionTypeGenerator): void {
     this.allActions.set(actionName, action);
   }
 
   public async emitEvent(eventName: string, ...args: any[]): Promise<any> {
-    const eventActions = this.eventActions.get(eventName);
+    const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
       return null;
     }
@@ -46,12 +42,21 @@ export class EventManager {
   }
 
   public registerEvent(eventName: string, action: Action): void {
-    let existingEvents = this.eventActions.get(eventName);
+    let existingEvents = this.eventActions[eventName];
     if (!existingEvents) {
       existingEvents = [];
     }
     existingEvents.push(action);
-    this.eventActions.set(eventName, existingEvents);
+    this.eventActions[eventName] = existingEvents;
+  }
+
+  public serialize(): string {
+    return JSON.stringify(this.eventActions);
+  }
+
+  public deserialize(jsonStr: string): EventActions {
+    this.eventActions = JSON.parse(jsonStr);
+    return this.eventActions;
   }
 
 }

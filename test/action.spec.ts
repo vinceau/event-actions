@@ -132,4 +132,18 @@ describe("action events", () => {
     expect(res).toBe(20);
   });
 
+  it("can deserialize event actions", async () => {
+    const mgr = new EventManager();
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
+    const eventName = "testEvent";
+    const jsonString = `{"testEvent":[{"name":"add-together","transform":true},{"name":"add-custom","transform":true,"args":5},{"name":"add-custom","transform":true,"args":10}]}`;
+    mgr.deserialize(jsonString);
+    let res: number;
+    res = await mgr.emitEvent(eventName, 2, 2);
+    expect(res).toBe(19);
+    res = await mgr.emitEvent(eventName, 1, 4);
+    expect(res).toBe(20);
+  });
+
 });
