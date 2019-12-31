@@ -66,6 +66,10 @@ export class EventManager {
     return res.length > 0;
   }
 
+  public setEventActions(eventName: string, actions: Action[]): void {
+    this.eventActions[eventName] = actions;
+  }
+
   public registerEvent(eventName: string, action: Action): void {
     let existingEvents = this.eventActions[eventName];
     if (!existingEvents) {
