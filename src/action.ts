@@ -49,7 +49,15 @@ export class EventManager {
     return Array.from(actions);
   }
 
-  public removeAction(event: string, index: number): boolean {
+  /**
+   * Removes the action for an event at the given index
+   *
+   * @param {string} event The name of the event
+   * @param {number} index The index of the action to be removed
+   * @returns {boolean} Whether the removal was successful
+   * @memberof EventManager
+   */
+  public removeEventAction(event: string, index: number): boolean {
     const list = this.eventActions[event];
     if (!list) {
       return false;

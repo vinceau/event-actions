@@ -137,18 +137,18 @@ describe("action events", () => {
     mgr.registerAction("add-together", AddTogether);
     mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
-    expect(mgr.removeAction(eventName, 1)).toBe(false)
+    expect(mgr.removeEventAction(eventName, 1)).toBe(false)
     mgr.registerEvent(eventName, {
       name: "add-together",
       transform: true,
     });
-    expect(mgr.removeAction(eventName, 1)).toBe(false)
+    expect(mgr.removeEventAction(eventName, 1)).toBe(false)
     mgr.registerEvent(eventName, {
       name: "add-custom",
       transform: true,
       args: 5,
     });
-    expect(mgr.removeAction(eventName, 1)).toBe(true)
+    expect(mgr.removeEventAction(eventName, 1)).toBe(true)
   });
 
   it("can remove actions", async () => {
@@ -170,7 +170,7 @@ describe("action events", () => {
       transform: true,
       args: 10,
     });
-    expect(mgr.removeAction(eventName, 2)).toBe(true)
+    expect(mgr.removeEventAction(eventName, 2)).toBe(true)
     let res: number;
     res = await mgr.emitEvent(eventName, 2, 2);
     expect(res).toBe(9);
