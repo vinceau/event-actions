@@ -43,8 +43,8 @@ export class EventManager {
     return prevReturn;
   }
 
-  public getActions(event: string): Action[] {
-    const actions = this.eventActions[event] || [];
+  public getActions(eventName: string): Action[] {
+    const actions = this.eventActions[eventName] || [];
     // Return a copy
     return Array.from(actions);
   }
@@ -57,13 +57,13 @@ export class EventManager {
   /**
    * Removes the action for an event at the given index
    *
-   * @param {string} event The name of the event
+   * @param {string} eventName The name of the event
    * @param {number} index The index of the action to be removed
    * @returns {boolean} Whether the removal was successful
    * @memberof EventManager
    */
-  public removeEventAction(event: string, index: number): boolean {
-    const list = this.eventActions[event];
+  public removeEventAction(eventName: string, index: number): boolean {
+    const list = this.eventActions[eventName];
     if (!list) {
       return false;
     }
