@@ -10,7 +10,7 @@ export type ActionTypeGenerator = (args?: any) => ActionType;
 export type EventActions = { [event: string]: Action[] }
 
 export class EventManager {
-  private eventActions: EventActions = {};
+  public eventActions: EventActions = {};
   private allActions = new Map<string, ActionTypeGenerator>();
 
   public registerAction(actionName: string, action: ActionTypeGenerator): void {
@@ -51,11 +51,6 @@ export class EventManager {
     const actions = this.eventActions[eventName] || [];
     // Return a copy
     return Array.from(actions);
-  }
-
-  public getAllEventActions(): EventActions {
-    // Return a copy
-    return Object.assign({}, this.eventActions);
   }
 
   /**
