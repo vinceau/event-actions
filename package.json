@@ -2,7 +2,7 @@
   "name": "@vinceau/event-actions",
   "description": "Event and action automation library",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "vinceau/event-actions",
   "engines": {
     "node": ">=6"
