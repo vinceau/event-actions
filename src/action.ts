@@ -26,6 +26,18 @@ export class EventManager {
     if (!eventActions || eventActions.length === 0) {
       return null;
     }
+    return this.execute(eventActions, args);
+  }
+
+  /**
+   * Execute a the given list of actions using the provided arguments.
+   *
+   * @param {Action[]} eventActions The list of actions to be executed
+   * @param {...any[]} args The arguments to start the action chain with
+   * @returns {Promise<any>} The value at the end of the chain
+   * @memberof EventManager
+   */
+  public async execute(eventActions: Action[], ...args: any[]): Promise<any> {
     let prevReturn = args;
     for (const a of eventActions) {
       const action = this.allActions.get(a.name);
