@@ -26,7 +26,7 @@ export class EventManager {
     if (!eventActions || eventActions.length === 0) {
       return null;
     }
-    return this.execute(eventActions, args);
+    return this.execute(eventActions, ...args);
   }
 
   /**
