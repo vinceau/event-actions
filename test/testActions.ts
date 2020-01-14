@@ -86,3 +86,16 @@ export const AddCustom: ActionTypeGenerator = (amount: number) => {
     };
   }
 }
+
+/*
+An action that adds a particular value to the context
+*/
+export const AddToContext: ActionTypeGenerator = (value: any) => {
+  return async (ctx: Context): Promise<Context> => {
+    await delay(100);
+    return {
+      ...ctx,
+      added: value,
+    };
+  }
+}

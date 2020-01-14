@@ -1,5 +1,5 @@
 import { EventManager, Context } from "../src/action";
-import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo, AddCustom } from "./testActions";
+import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo, AddCustom, AddToContext } from "./testActions";
 
 describe("action events", () => {
 
@@ -209,6 +209,22 @@ describe("action events", () => {
       result: [1, 4],
     });
     expect(res.result).toBe(20);
+  });
+
+  it("can write things to the context", async () => {
+    const mgr = new EventManager();
+    mgr.registerAction("add-context", AddToContext);
+    const eventName = "testEvent";
+    mgr.registerEvent(eventName, {
+      name: "add-context",
+      args: 123,
+    });
+    const beforeContext: Context = {
+      foo: "bar",
+    };
+    const afterContext: Context = await mgr.emitEvent(eventName, beforeContext);
+    expect(afterContext.foo).toBe("bar"); // the old context value should still be there
+    expect(afterContext.added).toBe(123); // the new context value should be added
   });
 
 });
