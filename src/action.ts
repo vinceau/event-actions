@@ -1,10 +1,13 @@
 export interface Action {
   name: string;
-  transform?: boolean;
   args?: any;
 }
 
-export type ActionType = (args?: any) => Promise<any>;
+export interface Context extends Record<string, any> {
+  result?: any; // the result of the action chain or the original args
+}
+
+export type ActionType = (ctx: Context) => Promise<Context>;
 export type ActionTypeGenerator = (args?: any) => ActionType;
 
 export type EventActions = { [event: string]: Action[] }
@@ -21,12 +24,12 @@ export class EventManager {
     return Array.from(this.allActions.keys());
   }
 
-  public async emitEvent(eventName: string, ...args: any[]): Promise<any> {
+  public async emitEvent(eventName: string, _ctx: Context): Promise<any> {
     const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
       return null;
     }
-    return this.execute(eventActions, ...args);
+    return this.execute(eventActions, _ctx);
   }
 
   /**
@@ -37,8 +40,10 @@ export class EventManager {
    * @returns {Promise<any>} The value at the end of the chain
    * @memberof EventManager
    */
-  public async execute(eventActions: Action[], ...args: any[]): Promise<any> {
-    let prevReturn = args;
+  public async execute(eventActions: Action[], _ctx: Context): Promise<any> {
+    let ctx: Context = {
+      ..._ctx,
+    };
     for (const a of eventActions) {
       const action = this.allActions.get(a.name);
       // Skip if it doesn't exist
@@ -46,17 +51,9 @@ export class EventManager {
         continue;
       }
       const actionFunc = action(a.args);
-      if (a.transform) {
-        // This is a transforming action so take the previous returned arguments
-        // and store them for the next transforming action
-        prevReturn = await actionFunc(...prevReturn);
-      } else {
-        // This is not a transforming action so take the original arguments
-        // that came with the emitted event
-        await actionFunc(...args);
-      }
+      ctx = await actionFunc(ctx);
     }
-    return prevReturn;
+    return ctx.result;
   }
 
   public getActions(eventName: string): Action[] {
