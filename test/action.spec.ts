@@ -1,4 +1,4 @@
-import { EventManager } from "../src/action";
+import { EventManager, Context } from "../src/action";
 import { TAddOne, TAddTwo, TAddTogether, TAddFive, TSubOne, TDivByTwo, TAddCustom } from "./testActions";
 
 describe("action events", () => {
@@ -10,19 +10,19 @@ describe("action events", () => {
     mgr.registerEvent(eventName, {
       name: "add-one",
     });
-    let res: number;
+    let res: Context;
     res = await mgr.emitEvent(eventName, {
       result: 1,
     });
-    expect(res).toBe(2);
+    expect(res.result).toBe(2);
     res = await mgr.emitEvent(eventName, {
       result: 2
     });
-    expect(res).toBe(3);
+    expect(res.result).toBe(3);
     res = await mgr.emitEvent(eventName, {
       result: 3
     });
-    expect(res).toBe(4);
+    expect(res.result).toBe(4);
   });
 
   it("should return NaN if no context was given to the transforming action", async () => {
@@ -32,8 +32,8 @@ describe("action events", () => {
     mgr.registerEvent(eventName, {
       name: "add-one",
     });
-    const res: number = await mgr.emitEvent(eventName, {});
-    expect(res).toBeNaN();
+    const res: Context = await mgr.emitEvent(eventName, {});
+    expect(res.result).toBeNaN();
   });
 
   it("correctly chains transforming actions", async () => {
@@ -56,19 +56,19 @@ describe("action events", () => {
     mgr.registerEvent(eventName, {
       name: "sub-one",
     });
-    let res;
+    let res: Context;
     res = await mgr.emitEvent(eventName, {
       result: 2,
     });
-    expect(res).toBe(9);
+    expect(res.result).toBe(9);
     res = await mgr.emitEvent(eventName, {
       result: 3,
     });
-    expect(res).toBe(10);
+    expect(res.result).toBe(10);
     res = await mgr.emitEvent(eventName, {
       result: 4,
     });
-    expect(res).toBe(11);
+    expect(res.result).toBe(11);
   });
 
   it("can take more than one argument", async () => {
@@ -82,15 +82,15 @@ describe("action events", () => {
     mgr.registerEvent(eventName, {
       name: "div-by-two",
     });
-    let res;
+    let res: Context;
     res = await mgr.emitEvent(eventName, {
       result: [2, 2],
     });
-    expect(res).toBe(2);
+    expect(res.result).toBe(2);
     res = await mgr.emitEvent(eventName, {
       result: [2, 6],
     });
-    expect(res).toBe(4);
+    expect(res.result).toBe(4);
   });
 
   it("can add custom", async () => {
@@ -109,15 +109,15 @@ describe("action events", () => {
       name: "add-custom",
       args: 10,
     });
-    let res: number;
+    let res: Context;
     res = await mgr.emitEvent(eventName, {
       result: [2, 2],
     });
-    expect(res).toBe(19);
+    expect(res.result).toBe(19);
     res = await mgr.emitEvent(eventName, {
       result: [1, 4],
     });
-    expect(res).toBe(20);
+    expect(res.result).toBe(20);
   });
 
   it("can execute arbitrary actions", async () => {
@@ -137,15 +137,15 @@ describe("action events", () => {
         args: 10,
       }
     ];
-    let res: number;
+    let res: Context;
     res = await mgr.execute(actionsList, {
       result: [2, 2],
     });
-    expect(res).toBe(19);
+    expect(res.result).toBe(19);
     res = await mgr.execute(actionsList, {
       result: [1, 4],
     });
-    expect(res).toBe(20);
+    expect(res.result).toBe(20);
   });
 
   it("cannot remove non-existent actions", async () => {
@@ -182,15 +182,15 @@ describe("action events", () => {
       args: 10,
     });
     expect(mgr.removeEventAction(eventName, 2)).toBe(true)
-    let res: number;
+    let res: Context;
     res = await mgr.emitEvent(eventName, {
       result: [2, 2],
     });
-    expect(res).toBe(9);
+    expect(res.result).toBe(9);
     res = await mgr.emitEvent(eventName, {
       result: [1, 4],
     });
-    expect(res).toBe(10);
+    expect(res.result).toBe(10);
   });
 
   it("can deserialize event actions", async () => {
@@ -200,15 +200,15 @@ describe("action events", () => {
     const eventName = "testEvent";
     const jsonString = `{"testEvent":[{"name":"add-together","transform":true},{"name":"add-custom","transform":true,"args":5},{"name":"add-custom","transform":true,"args":10}]}`;
     mgr.deserialize(jsonString);
-    let res: number;
+    let res: Context;
     res = await mgr.emitEvent(eventName, {
       result: [2, 2],
     });
-    expect(res).toBe(19);
+    expect(res.result).toBe(19);
     res = await mgr.emitEvent(eventName, {
       result: [1, 4],
     });
-    expect(res).toBe(20);
+    expect(res.result).toBe(20);
   });
 
 });

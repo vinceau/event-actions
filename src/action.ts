@@ -3,10 +3,7 @@ export interface Action {
   args?: any;
 }
 
-export interface Context extends Record<string, any> {
-  result?: any; // the result of the action chain or the original args
-}
-
+export type Context = Record<string, any>;
 export type ActionType = (ctx: Context) => Promise<Context>;
 export type ActionTypeGenerator = (args?: any) => ActionType;
 
@@ -24,7 +21,7 @@ export class EventManager {
     return Array.from(this.allActions.keys());
   }
 
-  public async emitEvent(eventName: string, _ctx: Context): Promise<any> {
+  public async emitEvent(eventName: string, _ctx: Context): Promise<Context> {
     const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
       return null;
@@ -40,7 +37,7 @@ export class EventManager {
    * @returns {Promise<any>} The value at the end of the chain
    * @memberof EventManager
    */
-  public async execute(eventActions: Action[], _ctx: Context): Promise<any> {
+  public async execute(eventActions: Action[], _ctx: Context): Promise<Context> {
     let ctx: Context = {
       ..._ctx,
     };
@@ -53,7 +50,7 @@ export class EventManager {
       const actionFunc = action(a.args);
       ctx = await actionFunc(ctx);
     }
-    return ctx.result;
+    return ctx;
   }
 
   public getActions(eventName: string): Action[] {
