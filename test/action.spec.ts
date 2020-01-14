@@ -1,5 +1,5 @@
 import { EventManager } from "../src/action";
-import { TAddOne, TAddTwo, AddTogether, TAddFive, TSubOne, DivByTwo, AddCustom } from "./testActions";
+import { TAddOne, TAddTwo, TAddTogether, TAddFive, TSubOne, TDivByTwo, TAddCustom } from "./testActions";
 
 describe("action events", () => {
 
@@ -71,12 +71,11 @@ describe("action events", () => {
     expect(res).toBe(11);
   });
 
-  /*
   it("can take more than one argument", async () => {
     const mgr = new EventManager();
     const eventName = "testEvent";
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("div-by-two", DivByTwo);
+    mgr.registerAction("add-together", TAddTogether);
+    mgr.registerAction("div-by-two", TDivByTwo);
     mgr.registerEvent(eventName, {
       name: "add-together",
     });
@@ -84,16 +83,20 @@ describe("action events", () => {
       name: "div-by-two",
     });
     let res;
-    res = await mgr.emitEvent(eventName, 2, 2);
+    res = await mgr.emitEvent(eventName, {
+      result: [2, 2],
+    });
     expect(res).toBe(2);
-    res = await mgr.emitEvent(eventName, 2, 6);
+    res = await mgr.emitEvent(eventName, {
+      result: [2, 6],
+    });
     expect(res).toBe(4);
   });
 
   it("can add custom", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
+    mgr.registerAction("add-together", TAddTogether);
+    mgr.registerAction("add-custom", TAddCustom);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-together",
@@ -107,16 +110,20 @@ describe("action events", () => {
       args: 10,
     });
     let res: number;
-    res = await mgr.emitEvent(eventName, 2, 2);
+    res = await mgr.emitEvent(eventName, {
+      result: [2, 2],
+    });
     expect(res).toBe(19);
-    res = await mgr.emitEvent(eventName, 1, 4);
+    res = await mgr.emitEvent(eventName, {
+      result: [1, 4],
+    });
     expect(res).toBe(20);
   });
 
   it("can execute arbitrary actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
+    mgr.registerAction("add-together", TAddTogether);
+    mgr.registerAction("add-custom", TAddCustom);
     const actionsList = [
       {
         name: "add-together",
@@ -131,16 +138,20 @@ describe("action events", () => {
       }
     ];
     let res: number;
-    res = await mgr.execute(actionsList, 2, 2);
+    res = await mgr.execute(actionsList, {
+      result: [2, 2],
+    });
     expect(res).toBe(19);
-    res = await mgr.execute(actionsList, 1, 4);
+    res = await mgr.execute(actionsList, {
+      result: [1, 4],
+    });
     expect(res).toBe(20);
   });
 
   it("cannot remove non-existent actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
+    mgr.registerAction("add-together", TAddTogether);
+    mgr.registerAction("add-custom", TAddCustom);
     const eventName = "testEvent";
     expect(mgr.removeEventAction(eventName, 1)).toBe(false)
     mgr.registerEvent(eventName, {
@@ -156,8 +167,8 @@ describe("action events", () => {
 
   it("can remove actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
+    mgr.registerAction("add-together", TAddTogether);
+    mgr.registerAction("add-custom", TAddCustom);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-together",
@@ -172,25 +183,32 @@ describe("action events", () => {
     });
     expect(mgr.removeEventAction(eventName, 2)).toBe(true)
     let res: number;
-    res = await mgr.emitEvent(eventName, 2, 2);
+    res = await mgr.emitEvent(eventName, {
+      result: [2, 2],
+    });
     expect(res).toBe(9);
-    res = await mgr.emitEvent(eventName, 1, 4);
+    res = await mgr.emitEvent(eventName, {
+      result: [1, 4],
+    });
     expect(res).toBe(10);
   });
 
   it("can deserialize event actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
+    mgr.registerAction("add-together", TAddTogether);
+    mgr.registerAction("add-custom", TAddCustom);
     const eventName = "testEvent";
     const jsonString = `{"testEvent":[{"name":"add-together","transform":true},{"name":"add-custom","transform":true,"args":5},{"name":"add-custom","transform":true,"args":10}]}`;
     mgr.deserialize(jsonString);
     let res: number;
-    res = await mgr.emitEvent(eventName, 2, 2);
+    res = await mgr.emitEvent(eventName, {
+      result: [2, 2],
+    });
     expect(res).toBe(19);
-    res = await mgr.emitEvent(eventName, 1, 4);
+    res = await mgr.emitEvent(eventName, {
+      result: [1, 4],
+    });
     expect(res).toBe(20);
   });
-  */
 
 });
