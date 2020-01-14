@@ -1,11 +1,11 @@
 import { EventManager, Context } from "../src/action";
-import { TAddOne, TAddTwo, TAddTogether, TAddFive, TSubOne, TDivByTwo, TAddCustom } from "./testActions";
+import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo, AddCustom } from "./testActions";
 
 describe("action events", () => {
 
   it("correctly calculates result for a single action", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-one", TAddOne);
+    mgr.registerAction("add-one", AddOne);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-one",
@@ -27,7 +27,7 @@ describe("action events", () => {
 
   it("should return NaN if no context was given to the transforming action", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-one", TAddOne);
+    mgr.registerAction("add-one", AddOne);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-one",
@@ -39,10 +39,10 @@ describe("action events", () => {
   it("correctly chains transforming actions", async () => {
     const mgr = new EventManager();
     const eventName = "testEvent";
-    mgr.registerAction("add-one", TAddOne);
-    mgr.registerAction("add-two", TAddTwo);
-    mgr.registerAction("add-five", TAddFive);
-    mgr.registerAction("sub-one", TSubOne);
+    mgr.registerAction("add-one", AddOne);
+    mgr.registerAction("add-two", AddTwo);
+    mgr.registerAction("add-five", AddFive);
+    mgr.registerAction("sub-one", SubOne);
 
     mgr.registerEvent(eventName, {
       name: "add-one",
@@ -74,8 +74,8 @@ describe("action events", () => {
   it("can take more than one argument", async () => {
     const mgr = new EventManager();
     const eventName = "testEvent";
-    mgr.registerAction("add-together", TAddTogether);
-    mgr.registerAction("div-by-two", TDivByTwo);
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("div-by-two", DivByTwo);
     mgr.registerEvent(eventName, {
       name: "add-together",
     });
@@ -95,8 +95,8 @@ describe("action events", () => {
 
   it("can add custom", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", TAddTogether);
-    mgr.registerAction("add-custom", TAddCustom);
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-together",
@@ -122,8 +122,8 @@ describe("action events", () => {
 
   it("can execute arbitrary actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", TAddTogether);
-    mgr.registerAction("add-custom", TAddCustom);
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
     const actionsList = [
       {
         name: "add-together",
@@ -150,8 +150,8 @@ describe("action events", () => {
 
   it("cannot remove non-existent actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", TAddTogether);
-    mgr.registerAction("add-custom", TAddCustom);
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
     expect(mgr.removeEventAction(eventName, 1)).toBe(false)
     mgr.registerEvent(eventName, {
@@ -167,8 +167,8 @@ describe("action events", () => {
 
   it("can remove actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", TAddTogether);
-    mgr.registerAction("add-custom", TAddCustom);
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-together",
@@ -195,8 +195,8 @@ describe("action events", () => {
 
   it("can deserialize event actions", async () => {
     const mgr = new EventManager();
-    mgr.registerAction("add-together", TAddTogether);
-    mgr.registerAction("add-custom", TAddCustom);
+    mgr.registerAction("add-together", AddTogether);
+    mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
     const jsonString = `{"testEvent":[{"name":"add-together","transform":true},{"name":"add-custom","transform":true,"args":5},{"name":"add-custom","transform":true,"args":10}]}`;
     mgr.deserialize(jsonString);

@@ -7,7 +7,7 @@ import { delay }  from "../src/utils";
 A transforming action. Takes the result of the last action
 and adds one to it.
 */
-export const TAddOne: ActionTypeGenerator = () => {
+export const AddOne: ActionTypeGenerator = () => {
   return async (ctx: Context): Promise<Context> => {
     await delay(200);
     return {
@@ -21,7 +21,7 @@ export const TAddOne: ActionTypeGenerator = () => {
 Adds the first two items of the result together.
 Result is assumed to be a list.
 */
-export const TAddTogether: ActionTypeGenerator = () => {
+export const AddTogether: ActionTypeGenerator = () => {
   return async (ctx: Context): Promise<Context> => {
     await delay(500);
     return {
@@ -34,7 +34,7 @@ export const TAddTogether: ActionTypeGenerator = () => {
 /*
 A transforming action that takes the result and divides it by two
 */
-export const TDivByTwo: ActionTypeGenerator = () => {
+export const DivByTwo: ActionTypeGenerator = () => {
   return async (ctx: Context): Promise<Context> => {
     await delay(200);
     return {
@@ -44,7 +44,7 @@ export const TDivByTwo: ActionTypeGenerator = () => {
   }
 }
 
-export const TSubOne: ActionTypeGenerator = () => {
+export const SubOne: ActionTypeGenerator = () => {
   return async (ctx: Context): Promise<Context> => {
     await delay(300);
     return {
@@ -54,7 +54,7 @@ export const TSubOne: ActionTypeGenerator = () => {
   }
 }
 
-export const TAddTwo: ActionTypeGenerator = () => {
+export const AddTwo: ActionTypeGenerator = () => {
   return async (ctx: Context): Promise<Context> => {
     await delay(200);
     return {
@@ -64,7 +64,7 @@ export const TAddTwo: ActionTypeGenerator = () => {
   }
 }
 
-export const TAddFive: ActionTypeGenerator = () => {
+export const AddFive: ActionTypeGenerator = () => {
   return async (ctx: Context): Promise<Context> => {
     await delay(200);
     return {
@@ -77,7 +77,7 @@ export const TAddFive: ActionTypeGenerator = () => {
 /*
 A transforming action that adds a custom number to the result.
 */
-export const TAddCustom: ActionTypeGenerator = (amount: number) => {
+export const AddCustom: ActionTypeGenerator = (amount: number) => {
   return async (ctx: Context): Promise<Context> => {
     await delay(100);
     return {
