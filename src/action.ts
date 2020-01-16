@@ -3,11 +3,14 @@ export interface Action {
   args?: any;
 }
 
-export type Context = Record<string, any>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Context extends Record<string, any> {};
+export interface EventActions {
+  [event: string]: Action[];
+}
+
 export type ActionType = (ctx: Context) => Promise<Context>;
 export type ActionTypeGenerator = (args?: any) => ActionType;
-
-export type EventActions = { [event: string]: Action[] }
 
 export class EventManager {
   public eventActions: EventActions = {};
