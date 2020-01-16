@@ -24,12 +24,13 @@ export class EventManager {
     return Array.from(this.allActions.keys());
   }
 
-  public async emitEvent(eventName: string, _ctx: Context): Promise<Context> {
+  public async emitEvent(eventName: string, context?: Context): Promise<Context> {
+    const ctx: Context = Object.assign({}, context);
     const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
       return null;
     }
-    return this.execute(eventActions, _ctx);
+    return this.execute(eventActions, ctx);
   }
 
   /**
@@ -40,10 +41,8 @@ export class EventManager {
    * @returns {Promise<any>} The value at the end of the chain
    * @memberof EventManager
    */
-  public async execute(eventActions: Action[], _ctx: Context): Promise<Context> {
-    let ctx: Context = {
-      ..._ctx,
-    };
+  public async execute(eventActions: Action[], context?: Context): Promise<Context> {
+    let ctx: Context = Object.assign({}, context);
     for (const a of eventActions) {
       const action = this.allActions.get(a.name);
       // Skip if it doesn't exist
