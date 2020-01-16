@@ -1,13 +1,16 @@
 export interface Action {
   name: string;
-  transform?: boolean;
   args?: any;
 }
 
-export type ActionType = (args?: any) => Promise<any>;
-export type ActionTypeGenerator = (args?: any) => ActionType;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Context extends Record<string, any> {};
+export interface EventActions {
+  [event: string]: Action[];
+}
 
-export type EventActions = { [event: string]: Action[] }
+export type ActionType = (ctx: Context) => Promise<Context>;
+export type ActionTypeGenerator = (args?: any) => ActionType;
 
 export class EventManager {
   public eventActions: EventActions = {};
@@ -21,12 +24,13 @@ export class EventManager {
     return Array.from(this.allActions.keys());
   }
 
-  public async emitEvent(eventName: string, ...args: any[]): Promise<any> {
+  public async emitEvent(eventName: string, context?: Context): Promise<Context> {
+    const ctx: Context = Object.assign({}, context);
     const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
       return null;
     }
-    return this.execute(eventActions, ...args);
+    return this.execute(eventActions, ctx);
   }
 
   /**
@@ -37,8 +41,8 @@ export class EventManager {
    * @returns {Promise<any>} The value at the end of the chain
    * @memberof EventManager
    */
-  public async execute(eventActions: Action[], ...args: any[]): Promise<any> {
-    let prevReturn = args;
+  public async execute(eventActions: Action[], context?: Context): Promise<Context> {
+    let ctx: Context = Object.assign({}, context);
     for (const a of eventActions) {
       const action = this.allActions.get(a.name);
       // Skip if it doesn't exist
@@ -46,17 +50,9 @@ export class EventManager {
         continue;
       }
       const actionFunc = action(a.args);
-      if (a.transform) {
-        // This is a transforming action so take the previous returned arguments
-        // and store them for the next transforming action
-        prevReturn = await actionFunc(...prevReturn);
-      } else {
-        // This is not a transforming action so take the original arguments
-        // that came with the emitted event
-        await actionFunc(...args);
-      }
+      ctx = await actionFunc(ctx);
     }
-    return prevReturn;
+    return ctx;
   }
 
   public getActions(eventName: string): Action[] {
