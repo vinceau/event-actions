@@ -28,10 +28,6 @@
     "prepublishOnly": "yarn run lint && yarn run test && yarn run build",
     "postpublish": "git push origin master --follow-tags"
   },
-  "jest": {
-    "testRegex": "/test/.*",
-    "testEnvironment": "node"
-  },
   "keywords": [],
   "dependencies": {},
   "devDependencies": {
