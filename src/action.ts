@@ -1,6 +1,9 @@
+import { delay } from "./utils";
+
 export interface Action {
   name: string;
   args?: any;
+  msDelay?: number;
   children?: Action[];
 }
 
@@ -50,6 +53,11 @@ export class EventManager {
 
   private async executeSingleAction(eventAction: Action, context: Context): Promise<void> {
     // Execute the action and pass the resulting context to all the child actions
+
+    // First delay if need be
+    if (eventAction.msDelay && eventAction.msDelay > 0) {
+      await delay(eventAction.msDelay);
+    }
 
     // Execute the action if it exists
     const action = this.allActions.get(eventAction.name);
