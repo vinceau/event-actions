@@ -104,6 +104,7 @@ describe("action events", () => {
       name: "add-together",
       children: [{
         name: "div-by-two",
+        children: [{ name: "assert" }]
       }],
     });
     await mgr.emitEvent(eventName, {
