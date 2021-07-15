@@ -1,43 +1,53 @@
-import { EventManager, Context } from "../src/action";
+import { EventManager, Context, ActionTypeGenerator } from "../src/action";
 import { AddOne, AddTwo, AddTogether, AddFive, SubOne, DivByTwo, AddCustom, AddToContext } from "./testActions";
 
 describe("action events", () => {
 
   it("correctly calculates result for a single action", async () => {
-    const mgr = new EventManager();
+    const mgr = newEventManager();
     mgr.registerAction("add-one", AddOne);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-one",
+      children: [{ name: "assert" }],
     });
-    let res: Context;
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: 1,
+      __expected__: {
+        result: 2,
+      },
     });
-    expect(res.result).toBe(2);
-    res = await mgr.emitEvent(eventName, {
-      result: 2
+    await mgr.emitEvent(eventName, {
+      result: 2,
+      __expected__: {
+        result: 3,
+      }
     });
-    expect(res.result).toBe(3);
-    res = await mgr.emitEvent(eventName, {
-      result: 3
+    await mgr.emitEvent(eventName, {
+      result: 3,
+      __expected__: {
+        result: 4,
+      }
     });
-    expect(res.result).toBe(4);
   });
 
   it("should return NaN if no context was given to the transforming action", async () => {
-    const mgr = new EventManager();
+    const mgr = newEventManager();
     mgr.registerAction("add-one", AddOne);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-one",
+      children: [{ name: "assert" }]
     });
-    const res: Context = await mgr.emitEvent(eventName, {});
-    expect(res.result).toBeNaN();
+    await mgr.emitEvent(eventName, {
+      __expected__: {
+        result: NaN,
+      }
+    });
   });
 
   it("correctly chains transforming actions", async () => {
-    const mgr = new EventManager();
+    const mgr = newEventManager();
     const eventName = "testEvent";
     mgr.registerAction("add-one", AddOne);
     mgr.registerAction("add-two", AddTwo);
@@ -46,106 +56,100 @@ describe("action events", () => {
 
     mgr.registerEvent(eventName, {
       name: "add-one",
+      children: [
+        {
+          name: "add-two",
+          children: [
+            {
+              name: "add-five",
+              children: [
+                {
+                  name: "sub-one",
+                  children: [{
+                    name: "assert",
+                  }],
+                }
+              ],
+            }
+          ],
+        }
+      ],
     });
-    mgr.registerEvent(eventName, {
-      name: "add-two",
-    });
-    mgr.registerEvent(eventName, {
-      name: "add-five",
-    });
-    mgr.registerEvent(eventName, {
-      name: "sub-one",
-    });
-    let res: Context;
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: 2,
+      __expected__: {
+        result: 9,
+      }
     });
-    expect(res.result).toBe(9);
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: 3,
+      __expected__: {
+        result: 10,
+      }
     });
-    expect(res.result).toBe(10);
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: 4,
+      __expected__: {
+        result: 11,
+      }
     });
-    expect(res.result).toBe(11);
   });
 
   it("can take more than one argument", async () => {
-    const mgr = new EventManager();
+    const mgr = newEventManager();
     const eventName = "testEvent";
     mgr.registerAction("add-together", AddTogether);
     mgr.registerAction("div-by-two", DivByTwo);
     mgr.registerEvent(eventName, {
       name: "add-together",
+      children: [{
+        name: "div-by-two",
+        children: [{ name: "assert" }]
+      }],
     });
-    mgr.registerEvent(eventName, {
-      name: "div-by-two",
-    });
-    let res: Context;
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: [2, 2],
+      __expected__: {
+        result: 2,
+      }
     });
-    expect(res.result).toBe(2);
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: [2, 6],
+      __expected__: {
+        result: 4,
+      },
     });
-    expect(res.result).toBe(4);
   });
 
   it("can add custom", async () => {
-    const mgr = new EventManager();
+    const mgr = newEventManager();
     mgr.registerAction("add-together", AddTogether);
     mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
     mgr.registerEvent(eventName, {
       name: "add-together",
-    });
-    mgr.registerEvent(eventName, {
-      name: "add-custom",
-      args: 5,
-    });
-    mgr.registerEvent(eventName, {
-      name: "add-custom",
-      args: 10,
-    });
-    let res: Context;
-    res = await mgr.emitEvent(eventName, {
-      result: [2, 2],
-    });
-    expect(res.result).toBe(19);
-    res = await mgr.emitEvent(eventName, {
-      result: [1, 4],
-    });
-    expect(res.result).toBe(20);
-  });
-
-  it("can execute arbitrary actions", async () => {
-    const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
-    const actionsList = [
-      {
-        name: "add-together",
-      },
-      {
+      children: [{
         name: "add-custom",
         args: 5,
-      },
-      {
-        name: "add-custom",
-        args: 10,
-      }
-    ];
-    let res: Context;
-    res = await mgr.execute(actionsList, {
+        children: [{
+          name: "add-custom",
+          args: 10,
+          children: [{ name: "assert" }],
+        }],
+      }]
+    });
+    await mgr.emitEvent(eventName, {
       result: [2, 2],
+      __expected__: {
+        result: 19,
+      },
     });
-    expect(res.result).toBe(19);
-    res = await mgr.execute(actionsList, {
+    await mgr.emitEvent(eventName, {
       result: [1, 4],
+      __expected__: {
+        result: 20,
+      },
     });
-    expect(res.result).toBe(20);
   });
 
   it("cannot remove non-existent actions", async () => {
@@ -165,50 +169,25 @@ describe("action events", () => {
     expect(mgr.removeEventAction(eventName, 1)).toBe(true)
   });
 
-  it("can remove actions", async () => {
-    const mgr = new EventManager();
-    mgr.registerAction("add-together", AddTogether);
-    mgr.registerAction("add-custom", AddCustom);
-    const eventName = "testEvent";
-    mgr.registerEvent(eventName, {
-      name: "add-together",
-    });
-    mgr.registerEvent(eventName, {
-      name: "add-custom",
-      args: 5,
-    });
-    mgr.registerEvent(eventName, {
-      name: "add-custom",
-      args: 10,
-    });
-    expect(mgr.removeEventAction(eventName, 2)).toBe(true)
-    let res: Context;
-    res = await mgr.emitEvent(eventName, {
-      result: [2, 2],
-    });
-    expect(res.result).toBe(9);
-    res = await mgr.emitEvent(eventName, {
-      result: [1, 4],
-    });
-    expect(res.result).toBe(10);
-  });
-
   it("can deserialize event actions", async () => {
-    const mgr = new EventManager();
+    const mgr = newEventManager();
     mgr.registerAction("add-together", AddTogether);
     mgr.registerAction("add-custom", AddCustom);
     const eventName = "testEvent";
-    const jsonString = `{"testEvent":[{"name":"add-together","transform":true},{"name":"add-custom","transform":true,"args":5},{"name":"add-custom","transform":true,"args":10}]}`;
+    const jsonString = `{"testEvent":[{"name":"add-together","children":[{"name":"add-custom","args":5,"children":[{"name":"add-custom","args":10,"children":[{"name":"assert"}]}]}]}]}`;
     mgr.deserialize(jsonString);
-    let res: Context;
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: [2, 2],
+      __expected__: {
+        result: 19,
+      },
     });
-    expect(res.result).toBe(19);
-    res = await mgr.emitEvent(eventName, {
+    await mgr.emitEvent(eventName, {
       result: [1, 4],
+      __expected__: {
+        result: 20,
+      },
     });
-    expect(res.result).toBe(20);
   });
 
   it("can write things to the context", async () => {
@@ -218,13 +197,38 @@ describe("action events", () => {
     mgr.registerEvent(eventName, {
       name: "add-context",
       args: 123,
+      children: [{"name": "assert"}],
     });
     const beforeContext: Context = {
       foo: "bar",
+      __expected__: {
+        foo: "bar",
+        aded: 123,
+      },
     };
-    const afterContext: Context = await mgr.emitEvent(eventName, beforeContext);
-    expect(afterContext.foo).toBe("bar"); // the old context value should still be there
-    expect(afterContext.added).toBe(123); // the new context value should be added
+    await mgr.emitEvent(eventName, beforeContext);
   });
 
 });
+
+const newEventManager = (): EventManager => {
+  const mgr = new EventManager();
+  mgr.registerAction("assert", AssertContext);
+  return mgr;
+};
+
+/*
+Asserts that a particular context exists
+*/
+const AssertContext: ActionTypeGenerator = () => {
+  return async (ctx: Context): Promise<Context> => {
+    const contextToCompare = ctx["__expected__"];
+    expect(contextToCompare).toBeDefined();
+    const contextKeys = Object.keys(contextToCompare);
+    expect(contextKeys.length).toBeGreaterThan(0);
+    for (const key of contextKeys) {
+      expect(ctx[key]).toEqual(contextToCompare[key]);
+    }
+    return ctx;
+  }
+}

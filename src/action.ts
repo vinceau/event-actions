@@ -1,6 +1,10 @@
+import { delay } from "./utils";
+
 export interface Action {
   name: string;
   args?: any;
+  msDelay?: number;
+  children?: Action[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -24,11 +28,11 @@ export class EventManager {
     return Array.from(this.allActions.keys());
   }
 
-  public async emitEvent(eventName: string, context?: Context): Promise<Context> {
+  public async emitEvent(eventName: string, context?: Context): Promise<void> {
     const ctx: Context = Object.assign({}, context);
     const eventActions = this.eventActions[eventName];
     if (!eventActions || eventActions.length === 0) {
-      return null;
+      return;
     }
     return this.execute(eventActions, ctx);
   }
@@ -41,18 +45,31 @@ export class EventManager {
    * @returns {Promise<any>} The value at the end of the chain
    * @memberof EventManager
    */
-  public async execute(eventActions: Action[], context?: Context): Promise<Context> {
-    let ctx: Context = Object.assign({}, context);
-    for (const a of eventActions) {
-      const action = this.allActions.get(a.name);
-      // Skip if it doesn't exist
-      if (!action) {
-        continue;
-      }
-      const actionFunc = action(a.args);
-      ctx = await actionFunc(ctx);
+  public async execute(eventActions: Action[], context?: Context): Promise<void> {
+    const ctx: Context = Object.assign({}, context);
+    const promises = eventActions.map(action => this.executeSingleAction(action, ctx));
+    await Promise.all(promises);
+  }
+
+  private async executeSingleAction(eventAction: Action, context: Context): Promise<void> {
+    // Execute the action and pass the resulting context to all the child actions
+
+    // First delay if need be
+    if (eventAction.msDelay && eventAction.msDelay > 0) {
+      await delay(eventAction.msDelay);
     }
-    return ctx;
+
+    // Execute the action if it exists
+    const action = this.allActions.get(eventAction.name);
+    let newContext: Context = context;
+    if (action) {
+      const actionFunc = action(eventAction.args);
+      newContext = await actionFunc(context);
+    }
+
+    if (eventAction.children && eventAction.children.length > 0) {
+      return this.execute(eventAction.children, newContext);
+    }
   }
 
   public getActions(eventName: string): Action[] {
